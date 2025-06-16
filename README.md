@@ -31,7 +31,11 @@ Una aplicación web desarrollada con **Vite + React + Tailwind CSS** que permite
 
 ```bash
 git clone https://github.com/Igarevalo/PT-BlockChainDC.git
+```
 
+2. Pasos a seguir luego de clonar el repositorio
+
+```bash
 - cd pruebaTecnica
 - npm install
 - npm run dev
