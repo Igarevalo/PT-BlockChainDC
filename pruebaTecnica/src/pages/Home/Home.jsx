@@ -4,51 +4,70 @@ import MovieList from "../../components/MovieList/MovieList";
 import Loader from "../../components/Loader.jsx/Loader";
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const lastSearch = localStorage.getItem("lastSearch");
-    if (lastSearch) {
-      setSearchTerm(lastSearch);
-      fetchMovies(lastSearch);
-    }
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchMovies = async (query) => {
-    setLoading(true);
+    if (query.trim() === '') {
+      setMovies([]);
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
     try {
+      // Reemplaza 'YOUR_API_KEY' con tu clave de API de OMDb
       const res = await fetch(`https://www.omdbapi.com/?apikey=20f0101&s=${query}`);
       const data = await res.json();
-      if (data.Search) {
+
+      if (data.Response === 'True') {
         setMovies(data.Search);
       } else {
         setMovies([]);
+        setError(data.Error || 'No se encontraron películas.');
       }
     } catch (err) {
       console.error("Error al buscar películas:", err);
-      setMovies([]);
+      setError('Hubo un problema al buscar las películas. Intenta de nuevo más tarde.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const searchMovies = () => {
-    if (!searchTerm) return;
-    localStorage.setItem("lastSearch", searchTerm);
+  useEffect(() => {
+  }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchClick = () => {
     fetchMovies(searchTerm);
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center text-green-700 mb-6">🎬 Buscador de Películas</h1>
-      <SearchBar
-        searchTerm={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onSearch={searchMovies}
-      />
-      {loading ? <Loader /> : <MovieList movies={movies} />}
+    <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
+      <header className="text-center mb-10">
+        <h1 className="text-4xl font-extrabold text-indigo-800 tracking-tight sm:text-5xl lg:text-6xl">
+          📽️ Buscador de Películas
+        </h1>
+        <p className="mt-3 text-lg text-gray-600">Encuentra tus películas favoritas al instante.</p>
+      </header>
+
+      <main className="max-w-6xl mx-auto">
+        <SearchBar
+          searchTerm={searchTerm}
+          onChange={handleSearchChange}
+          onSearch={handleSearchClick}
+        />
+
+        {isLoading && <Loader />}
+        {error && (
+          <p className="text-center text-red-500 text-lg font-medium py-8">{error}</p>
+        )}
+        {!isLoading && !error && <MovieList movies={movies} />}
+      </main>
     </div>
   );
 }

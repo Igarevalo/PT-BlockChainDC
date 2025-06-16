@@ -1,16 +1,24 @@
+// src/components/SearchBar/SearchBar.jsx
 export default function SearchBar({ searchTerm, onChange, onSearch }) {
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      onSearch();
+    }
+  };
+
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 p-4 bg-white shadow-lg rounded-lg">
       <input
         type="text"
-        placeholder="Buscar una película..."
         value={searchTerm}
         onChange={onChange}
-        className="border border-gray-300 rounded px-4 py-2 w-full sm:w-80"
+        onKeyDown={handleKeyDown} 
+        placeholder="Buscar película por título..."
+        className="px-5 py-3 rounded-full border border-gray-300 shadow-sm w-[600px] focus:outline-none focus:ring-3 focus:ring-indigo-500 focus:border-transparent text-lg transition-all duration-300 ease-in-out"
       />
       <button
         onClick={onSearch}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        className="bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-3 focus:ring-indigo-500 focus:ring-offset-2"
       >
         Buscar
       </button>

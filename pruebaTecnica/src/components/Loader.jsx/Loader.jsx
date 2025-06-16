@@ -1,8 +1,8 @@
 export default function Loader() {
   return (
-    <div className="text-center mt-8">
-      <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin mx-auto"></div>
-      <p className="mt-2 text-green-600 font-medium">Cargando...</p>
+    <div className="flex flex-col items-center justify-center min-h-[200px] py-12">
+      <div className="w-16 h-16 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
+      <p className="mt-4 text-indigo-600 font-semibold text-lg">Cargando películas...</p>
     </div>
   );
 }
