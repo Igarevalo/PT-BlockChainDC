@@ -1,43 +1,54 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import MovieList from "../../components/MovieList/MovieList";
-import MovieDetails from "../../components/MovieDetails/MovieDetails";
+import Loader from "../../components/Loader.jsx/Loader";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const API_KEY = "20f0101"; 
+  const [loading, setLoading] = useState(false);
 
-  const searchMovies = async () => {
-    if (!searchTerm) return;
-    const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${searchTerm}`);
-    const data = await res.json();
-    if (data.Search) {
-      setMovies(data.Search);
-    } else {
+  useEffect(() => {
+    const lastSearch = localStorage.getItem("lastSearch");
+    if (lastSearch) {
+      setSearchTerm(lastSearch);
+      fetchMovies(lastSearch);
+    }
+  }, []);
+
+  const fetchMovies = async (query) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`https://www.omdbapi.com/?apikey=20f0101&s=${query}`);
+      const data = await res.json();
+      if (data.Search) {
+        setMovies(data.Search);
+      } else {
+        setMovies([]);
+      }
+    } catch (err) {
+      console.error("Error al buscar películas:", err);
       setMovies([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchMovieDetails = async (id) => {
-    const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${id}&plot=full`);
-    const data = await res.json();
-    setSelectedMovie(data);
+  const searchMovies = () => {
+    if (!searchTerm) return;
+    localStorage.setItem("lastSearch", searchTerm);
+    fetchMovies(searchTerm);
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">Buscador de Películas</h1>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center text-green-700 mb-6">🎬 Buscador de Películas</h1>
       <SearchBar
         searchTerm={searchTerm}
-        onSearch={searchMovies}
         onChange={(e) => setSearchTerm(e.target.value)}
+        onSearch={searchMovies}
       />
-      <MovieList movies={movies} onSelect={fetchMovieDetails} />
-      {selectedMovie && (
-        <MovieDetails movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
-      )}
+      {loading ? <Loader /> : <MovieList movies={movies} />}
     </div>
   );
 }
