@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: #f0f2f5; /* Un gris claro para el fondo */
+  font-family: 'Inter', sans-serif; /* Puedes usar Google Fonts o una fuente del sistema */
+}
